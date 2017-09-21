@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <!-- 首先配置pool（连接池） -->
+    <bean id="redisPool" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${redis.maxIdle}"/>
+		<property name="maxWaitMillis" value="${redis.maxWait}"/>
+	</bean>
+    
+    <!-- 在配置Factory（此配置需要关联pool配置） -->
+	<bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="poolConfig" ref="redisPool"/>
+		<property name="hostName" value="${redis.ip}"/>
+		<property name="port" value="${redis.port}"/>
+	</bean>
+	
+	<bean id="stringser" class="org.springframework.data.redis.serializer.StringRedisSerializer"></bean>
+	
+	<!-- 配置redis模板文件（关联连接工厂配置（connectionFactory）） -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+		<property name="connectionFactory" ref="connectionFactory"/>
+	</bean>   
+</beans>	

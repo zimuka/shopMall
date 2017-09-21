@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.MerchMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="merchResultMap" type="merch">
+		<id property="id" column="id" />
+		<result property="categoryId" column="category_id"/>
+		<result property="merchName" column="merch_name"/>
+		<result property="merchPrice" column="merch_price"/>
+		<result property="merchStock" column="merch_stock"/>
+		<result property="merchDescribe" column="merch_describe"/>
+		<result property="status" column="status"/>
+		<result property="soldNum" column="sold_num"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+		<result property="pictureName" column="picture_name"/>
+		
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="merch_filed">
+		id, category_id, merch_name, merch_price, merch_stock, 
+		merch_describe, status, sold_num, create_time, modify_time, picture_name
+	</sql>
+	
+	<!-- 根据类目Id查询所有商品 -->
+	<select id="getMerchsByCategoryId" parameterType="int" resultMap="merchResultMap">
+		select <include refid="merch_filed"></include>
+		from mall_merch
+		where status=1 and category_id=#{CategoryId};
+	</select>
+	
+	<!-- 根据商品ID查询商品详情 -->
+	<select id="getMerchById" parameterType="int" resultMap="merchResultMap">
+		select <include refid="merch_filed"></include>
+		from mall_merch
+		where status=1 and id=#{merchId};
+	</select>
+	
+	<!-- 增加商品 -->
+	<insert id="addMerch" parameterType="merch" useGeneratedKeys="true" keyProperty="id">
+		insert into mall_merch(category_id, merch_name, merch_price, merch_stock, 
+		merch_describe, status, sold_num, create_time, modify_time, picture_name) 
+		value(#{categoryId}, #{merchName},#{merchPrice},#{merchStock},#{merchDescribe},#{status},
+		 #{soldNum},now(), now(),  #{pictureName});
+	</insert>
+</mapper>

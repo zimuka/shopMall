@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.RegistMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="registResultMap" type="regist">
+		<id property="id" column="id" />
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="email" column="email"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+		<result property="status" column="status"/>
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="regist_filed">
+		id, username, password, email, create_time, modify_time, status
+	</sql>
+	
+	<!-- 增加注册 -->
+	<insert id="addRegist" parameterType="regist" useGeneratedKeys="true" keyProperty="id">
+		insert into mall_regist(username, password, email, create_time, modify_time, status) 
+		value(#{username}, #{password}, #{email}, now(), now(), #{status} )
+	</insert>
+	
+	<!-- 查询用户 -->
+	<select id="getRegistByUsername" parameterType="string" resultMap="registResultMap">
+		select <include refid="regist_filed"></include>
+		from mall_regist
+		where username=#{username};
+	</select>
+	
+	<!-- 查询用户 -->
+	<select id="getRegistById" parameterType="int" resultMap="registResultMap">
+		select <include refid="regist_filed"></include>
+		from mall_regist
+		where id=#{registId};
+	</select>
+		
+</mapper>

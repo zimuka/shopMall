@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.OrderDetailMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="orderDetailResultMap" type="orderDetail">
+		<id property="id" column="id" />
+		<result property="orderId" column="order_id"/>
+		<result property="merchId" column="merch_id"/>
+		<result property="quantity" column="quantity"/>
+		<result property="unitPrice" column="unit_price"/>
+		<result property="amount" column="amount"/>
+		<result property="merchName" column="merch_name"/>
+		<result property="createTime" column="create_time"/>
+		
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="orderDetail_filed">
+		id, order_id, merch_id, quantity, unit_price, amount, merch_name, create_time
+	</sql>
+	
+	<!-- 增加子订单 -->
+	<insert id="save" parameterType="orderDetail" useGeneratedKeys="true" keyProperty="id">
+		insert into mall_order_detail(order_id, merch_id, quantity, unit_price, amount, merch_name, create_time) 
+		value(#{orderId}, #{merchId}, #{quantity}, #{unitPrice}, #{amount}, #{merchName}, now())
+	</insert>
+	
+	<!-- 根据订单ID查询所有的子订单 -->
+	<select id="listOrderDetail" parameterType="int" resultMap="orderDetailResultMap">
+		select <include refid="orderDetail_filed"></include>
+		from mall_order_detail
+		where order_id=#{orderId}
+	</select>
+	
+</mapper>

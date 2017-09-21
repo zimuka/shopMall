@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.UserMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="userResultMap" type="user">
+		<id property="id" column="id" />
+		<result property="registId" column="regist_id"/>
+		<result property="userPhone" column="user_phone"/>
+		<result property="userSex" column="user_sex"/>
+		<result property="userBirthday" column="user_birthday"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="user_filed">
+		id, regist_id, user_phone, user_sex, user_birthday, create_time, modify_time
+	</sql>
+	
+	<!-- 编辑增加用户信息 -->
+	<insert id="addUser" parameterType="user" useGeneratedKeys="true" keyProperty="id">
+		insert into mall_user(regist_id, user_phone, user_sex, user_birthday, create_time, modify_time)
+		value(#{registId}, #{userPhone}, #{userSex}, #{userBirthday}, now(), now())
+	</insert>
+	
+	<!-- 根据registId查询user信息 -->
+	<select id="getUserByRegistId" parameterType="int" resultMap="userResultMap">
+		select <include refid="user_filed"></include>
+		from mall_user
+		where regist_id=#{registId};
+	</select>
+	
+	<!-- 根据Id查询user信息 -->
+	<!-- <select id="getUserByRegistId" parameterType="int" resultMap="userResultMap">
+		select <include refid="user_filed"></include>
+		from mall_user
+		where id=#{userId};
+	</select> -->
+	
+	<!-- 修改用户信息 -->
+	<update id="updateUser" parameterType="HashMap">
+		update mall_user set user_phone=#{userPhone}, user_sex=#{userSex}, user_birthday=#{userBirthday}, modify_time=now()
+		where id=#{userId};
+	</update>
+		
+</mapper>

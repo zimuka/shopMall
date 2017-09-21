@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.ShopCarMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="shopCarResultMap" type="shopCar">
+		<id property="id" column="id" />
+		<result property="registId" column="regist_id"/>
+		<result property="merchId" column="merch_id"/>
+		<result property="merchNum" column="merch_num"/>
+		<result property="status" column="status"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="shopCar_filed">
+		id, regist_id, merch_id, merch_num, status, create_time, modify_time
+	</sql>
+	
+	<!-- 增加购物车 -->
+	<insert id="addShopCar" parameterType="shopCar" useGeneratedKeys="true" keyProperty="id">
+		insert into mall_shopping_cart(regist_id, merch_id, merch_num, status, create_time, modify_time) 
+		value(#{registId}, #{merchId}, #{merchNum}, 1,now(), now())
+	</insert>
+	
+	<!-- 查询购物车 -->
+	<select id="listShopCar" parameterType="int" resultMap="shopCarResultMap">
+		select <include refid="shopCar_filed"></include>
+		from mall_shopping_cart
+		where regist_id=#{registId} and status=1;
+	</select>
+	
+	<!-- 根据购物车Id查询单条数据 -->
+	<select id="getShopCarById" parameterType="int" resultMap="shopCarResultMap">
+		select <include refid="shopCar_filed"></include>
+		from mall_shopping_cart
+		where id=#{shopCarId}
+	</select>
+	
+	<!-- 删除购物车信息 -->
+	<update id="updateStatus">
+		update mall_shopping_cart set status=2 
+		where id=#{shopCarId};
+	</update>
+	
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.OrderMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="orderResultMap" type="order">
+		<id property="id" column="id" />
+		<result property="RegistId" column="regist_id"/>
+		<result property="orderFrom" column="order_from"/>
+		<result property="status" column="status"/>
+		<result property="amount" column="amount"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+		<result property="payChannel" column="pay_channel"/>
+		
+		<result property="provinceName" column="province_name"/>
+		<result property="cityName" column="city_name"/>
+		<result property="areaName" column="area_name"/>
+		<result property="detailAddress" column="detail_address"/>
+		<result property="realName" column="real_name"/>
+		<result property="phone" column="phone"/>
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="order_filed">
+		id, regist_id, order_from, status, amount, create_time, modify_time, pay_channel,
+		province_name, city_name, area_name, detail_address, real_name, phone
+	</sql>
+	
+	<!-- 增加订单 -->
+	<insert id="addOrder" parameterType="order" useGeneratedKeys="true" keyProperty="id">
+		insert into mall_order(regist_id, order_from, status, amount, create_time, modify_time, pay_channel) 
+		value(#{registId}, #{orderFrom}, #{status}, #{amount}, now(), now(), #{payChannel})
+	</insert>
+	
+	<!-- 根据Id查询order -->
+	<select id="getOrderById" parameterType="int" resultMap="orderResultMap">
+		select <include refid="order_filed"></include>
+		from mall_order
+		where id = #{orderId};
+	</select>
+	
+	<!-- 修改订单的状态 -->
+	<update id="changeOrderStatus" parameterType="java.util.HashMap">
+		update mall_order set status=#{status}, modify_time=now()
+		where regist_id=#{registId} and id = #{orderId};
+	</update>
+	
+	<!-- 修改订单详情 -->
+	<update id="updateOrderInfo">
+		update mall_order
+		<trim prefix="set" suffixOverrides=",">
+		modify_time=now(),
+		<if test="payChannel != null">
+			pay_channel=#{payChannel},
+		</if>
+		<if test="provinceName != null">
+			province_name=#{provinceName},
+		</if>
+		<if test="cityName != null">
+			city_name=#{cityName},
+		</if>
+		<if test="areaName != null">
+			area_name=#{areaName},
+		</if>
+		<if test="detailAddress != null">
+			detail_address=#{detailAddress},
+		</if>
+		<if test="realName != null">
+			real_name=#{realName},
+		</if>
+		<if test="phone != null">
+			phone=#{phone},
+		</if>
+		</trim>
+		where id=#{id};
+	</update>
+	
+	<select id="listOrderByRegistIdAndStauts" resultMap="orderResultMap">
+		select <include refid="order_filed"></include>
+		from mall_order
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="registId != null">
+				and regist_id=#{registId}
+			</if>
+			<if test="status != null">
+				and status=#{status}
+			</if>
+			<if test="status == null">
+				<![CDATA[
+					and status <> 1
+				]]>
+			</if>
+			order by id desc limit #{offset}, #{pageNum};
+		</trim>
+	</select>
+	
+	<select id="countOrderNum" resultType="int">
+		select count(*)
+		from mall_order
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="registId != null">
+				and regist_id=#{registId}
+			</if>
+			<if test="status != null">
+				and status=#{status}
+			</if>
+			<if test="status == null">
+				<![CDATA[
+					and status <> 1
+				]]>
+			</if>
+		</trim>
+	</select>
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <!-- 找到com.dayuanit包下所有类，加标签的，注册为bean -->
+    <context:component-scan base-package="com.dayuanit"/>
+    
+	
+	<!--(通过扫描的方式，找到对应的mapper，name为固定格式，value则是存放mapper的包名)-->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+	  <property name="basePackage" value="com.dayuanit.shoppingMall.mapper" />
+	  <!--(sqlSessionFactoryBeanName = userMapper, cardMapper, detailMapper)-->
+	  <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	
+	<!--(dataSource配置对应相应数据库)-->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	
+	  <property name="dataSource" ref="dataSource" />
+	  
+		<!--(寻找对应的mapper下的xml文件 User.xml,Card.xml,Detail.xml)-->
+	  <property name="mapperLocations" value="classpath*:mybatis/mapper/**/*.xml" />
+	  
+		<!--(去resource路径下找到mybatis-config.xml文件，找到对应别名)-->
+	  <property name="configLocation" value="classpath:/mybatis/mybatis-config.xml"/>
+	</bean>
+	
+	<context:property-placeholder location="classpath:jdbc.properties,classpath:redis.properties" />
+	
+	<!-- 创建数据源 -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<!-- 对应的是JDBC的驱动 -->
+	    <property name="driverClassName" value="${jdbc.driver}"/>
+	    <property name="url" value="${jdbc.url}"/>
+	    <property name="username" value="${jdbc.username}"/>
+	    <property name="password" value="${jdbc.password}"/>
+	</bean>
+	
+	<!-- Spring与Mybatis整合后事务失效后需要添加此段bean -->
+	<tx:annotation-driven transaction-manager="txManager"/>
+    
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <import resource="spring-redis.xml"/>
+    <import resource="spring-cxf.xml"/>
+    
+</beans>	

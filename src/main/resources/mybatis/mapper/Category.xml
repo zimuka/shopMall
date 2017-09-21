@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.CategoryMapper">
+	<!-- 程序的变量与表字段对应起来 -->
+	<resultMap id="categoryResultMap" type="category">
+		<id property="id" column="id" />
+		<result property="categoryName" column="category_name"/>
+		<result property="status" column="status"/>
+		<result property="createTime" column="create_time"/>
+		<result property="modifyTime" column="modify_time"/>
+	</resultMap>
+	
+	<!-- 将数据库中的表字段提取出来 -->
+	<sql id="category_filed">
+		id, category_name, status, create_time, modify_time
+	</sql>
+	
+	<!-- 查询可用类目，status=1 -->
+	<select id="getCategorysByStatus" resultMap="categoryResultMap">
+		select <include refid="category_filed"></include>
+		from mall_category
+		where status=1;
+	</select>
+	
+</mapper>

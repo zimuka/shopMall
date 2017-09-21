@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayuanit.shoppingMall.mapper.ProvinceAndCityMapper">
+	
+	<!-- 获取省份 -->
+	<select id="listProvince" resultType="java.util.HashMap">
+		select code, name from mall_province;
+	</select>
+	
+	<!-- 获取市 -->
+	<select id="listCity" resultType="java.util.HashMap">
+		select code, name from mall_city where provincecode=#{provinveCode};
+	</select>
+	
+	<!-- 获取区 -->
+	<select id="listArea" resultType="java.util.HashMap">
+		select code, name from mall_area where citycode=#{cityCode};
+	</select>
+	
+</mapper>
